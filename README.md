@@ -24,6 +24,7 @@
 - Press the **"Live Inputs"** button to start testing controller inputs.
 - Press the **"Record Inputs"** button to start recording controller inputs.
 - Right click one of the property in the addon panel > Copy as New Driver, and the right click the property that you want driven (an object X location for example) and Paste Driver.
+- For use in Geometry Nodes, look for the BCL_ControllerInputs nodegroup under Group (Add Node)
 
 ## Requirements
 
