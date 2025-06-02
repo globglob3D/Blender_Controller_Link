@@ -16,26 +16,18 @@ from . import main
 from . import ui
 
 classes = (
-    main.BCL_OT_ControllerInput,
-    main.BCL_OT_Record,
+    main.BCL_OT_LiveControllerInputs,
+    main.BCL_OT_RecordControllerInputs,
+    main.BCL_OT_CreateNodegroup,
     ui.BCL_PT_Main,
 )
-
-def start_controller_poll():
-    try:
-        bpy.ops.bcl.controller_input()
-    except RuntimeError as e:
-        print("Could not start controller input:", e)
-    return None  # Only run once
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
     bpy.types.Scene.bcl_record_modal_running = bpy.props.BoolProperty(default=False)
-
-    # Delay to ensure context is fully ready
-    bpy.app.timers.register(start_controller_poll, first_interval=0.1)
+    bpy.types.Scene.bcl_live_modal_running = bpy.props.BoolProperty(default=False)
 
 def unregister():
     for cls in reversed(classes):
