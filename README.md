@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/bcf4c8ae-0e51-4712-a0ea-c45cb9798761
+
 # BCL - Blender Controller Link
 
 **BCL (Blender Controller Link)** is a Blender add-on that lets you use a game controller or gamepad as a real-time input device inside Blender. It turns controller inputs into animatable properties that can drive bones, geometry nodes, object transforms, and more — enabling intuitive, physical control for animation, rig testing, live performances, and procedural systems.
