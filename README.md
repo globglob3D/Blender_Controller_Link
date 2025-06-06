@@ -30,4 +30,7 @@
 
 - Blender 4.4 or newer
 
+## More info and contact
+https://discord.gg/XzRvfupCad
+
 
