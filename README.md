@@ -1,32 +1,34 @@
-# BCL - Blender Controller Link
+https://github.com/user-attachments/assets/bcf4c8ae-0e51-4712-a0ea-c45cb9798761
 
-**BCL (Blender Controller Link)** is a Blender add-on that lets you use a game controller or gamepad as a real-time input device inside Blender. It turns controller inputs into animatable properties that can drive bones, geometry nodes, object transforms, and more — enabling intuitive, physical control for animation, rig testing, live performances, and procedural systems.
+# Controller Link
+
+**Controller Link** is a Blender add-on that lets you use a game controller or gamepad as a real-time input device. It turns controller inputs into animatable properties that can drive bones, geometry nodes, object transforms, and more — enabling intuitive, physical control for animation, rig testing, live performances, and procedural systems.
 
 ## Features
 
-- Real-time input from supported game controllers
-- Maps axes and buttons to any property using drivers
-- Control objects, rigs, and geometry nodes with physical input
-- Record inputs directly as keyframes on the timeline
-- No setup needed
-- Lightweight, fast, and non-intrusive
+- Live and record gamepad inputs
+- Link to Geometry Nodes
+- Works with any gamepad
+- Work on Windows, Mac, and Linux
 
 ## Installation
 
 1. Download the ZIP of this repository.
 2. In Blender, go to **Edit > Preferences > Add-ons**.
 3. Click **Install...** and select the ZIP file.
-4. Enable **Blender Controller Link (BCL)** in the list.
+4. Enable **Controller Link** in the list.
 
 ## Usage
 
-- In the 3D Viewport, open the **BCL** panel in the right sidebar (N-panel).
-- Press the **"Live Inputs"** button to start testing controller inputs.
-- Press the **"Record Inputs"** button to start recording controller inputs.
-- Right click one of the property in the addon panel > Copy as New Driver, and the right click the property that you want driven (an object X location for example) and Paste Driver.
+Go the Controller Link tab and click the button to get your controller inputs.
+Drivers: Right click a controller input property, copy as driver, and right click any property that you want driven by this input and Paste Driver.
+GN: Just add the Controller Link node group to your tree.
+You can record inputs if you wish. 
+Once you record your inputs, you can use the Bake Animation operator (native to Blender) to keep that recording and be able to make a new one without overriding your work.
 
 ## Requirements
 
 - Blender 4.4 or newer
 
-
+## More info and contact
+https://discord.gg/XzRvfupCad
