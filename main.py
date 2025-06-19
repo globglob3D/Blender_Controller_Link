@@ -2,14 +2,14 @@ import bpy
 import sdl2
 
 def get_reader():
-    return bpy.data.objects.get("BCL_reader")
+    return bpy.data.objects.get("CL_reader")
 
 def create_reader():
-    bcl_reader = get_reader()
-    if bcl_reader is None:
-        bcl_reader = bpy.data.objects.new("BCL_reader", None)
-        bcl_reader.use_fake_user = True
-    return bcl_reader
+    cl_reader = get_reader()
+    if cl_reader is None:
+        cl_reader = bpy.data.objects.new("CL_reader", None)
+        cl_reader.use_fake_user = True
+    return cl_reader
 
 def keyframe_inputs(scene):
     reader = get_reader()
@@ -56,8 +56,8 @@ class SDL2_Controller_Handler:
 
     def poll(self):
         sdl2.SDL_PumpEvents()
-        bcl_reader = get_reader()
-        if not bcl_reader:
+        cl_reader = get_reader()
+        if not cl_reader:
             return
 
         if self.is_gamecontroller and self.controller:
@@ -68,14 +68,14 @@ class SDL2_Controller_Handler:
                     prop_id = f"controller_axis_{name}"
                     raw = sdl2.SDL_GameControllerGetAxis(self.controller, axis)
                     value = max(-1.0, min(1.0, raw / 32767.0))
-                    bcl_reader[prop_id] = value
+                    cl_reader[prop_id] = value
 
             for button in range(sdl2.SDL_CONTROLLER_BUTTON_MAX):
                 if sdl2.SDL_GameControllerHasButton(self.controller, button):
                     name = sdl2.SDL_GameControllerGetStringForButton(button).decode("utf-8")
                     prop_id = f"controller_button_{name}"
                     pressed = bool(sdl2.SDL_GameControllerGetButton(self.controller, button))
-                    bcl_reader[prop_id] = pressed
+                    cl_reader[prop_id] = pressed
 
         elif self.joystick:
             # Poll raw joystick axes and buttons (fallback)
@@ -84,32 +84,32 @@ class SDL2_Controller_Handler:
                 raw = sdl2.SDL_JoystickGetAxis(self.joystick, axis)
                 value = max(-1.0, min(1.0, raw / 32767.0))
                 prop_id = f"controller_axis_{axis}"
-                bcl_reader[prop_id] = value
+                cl_reader[prop_id] = value
 
             num_buttons = sdl2.SDL_JoystickNumButtons(self.joystick)
             for button in range(num_buttons):
                 pressed = bool(sdl2.SDL_JoystickGetButton(self.joystick, button))
                 prop_id = f"controller_button_{button}"
-                bcl_reader[prop_id] = pressed
+                cl_reader[prop_id] = pressed
 
         else:
             # No controller or joystick
             return
 
         # Trigger update on the empty to force driver updates
-        bcl_reader.location = bcl_reader.location
+        cl_reader.location = cl_reader.location
 
-class BCL_OT_LiveControllerInputs(bpy.types.Operator):
+class CL_OT_LiveControllerInputs(bpy.types.Operator):
     """Get Controller Inputs (Live, ie without animation playback)"""
-    bl_idname = "bcl.live_controller_inputs"
+    bl_idname = "wm.cl_live_controller_inputs"
     bl_label = "Get Controller Inputs"
 
     _timer = None
 
     def modal(self, context, event):
         if event.type == 'TIMER':
-            BCL_OT_LiveControllerInputs.sdl2_controller_handler.poll()
-        if not context.scene.bcl_live_modal_running or event.type in {'ESC'}:
+            CL_OT_LiveControllerInputs.sdl2_controller_handler.poll()
+        if not context.scene.cl_live_modal_running or event.type in {'ESC'}:
             self.cancel(context)
             return {'CANCELLED'}
         return {'PASS_THROUGH'}
@@ -118,23 +118,23 @@ class BCL_OT_LiveControllerInputs(bpy.types.Operator):
         
         create_reader()
 
-        if context.scene.bcl_record_modal_running:
-            context.scene.bcl_record_modal_running = False
+        if context.scene.cl_record_modal_running:
+            context.scene.cl_record_modal_running = False
 
-        if context.scene.bcl_live_modal_running:
-            context.scene.bcl_live_modal_running = False
+        if context.scene.cl_live_modal_running:
+            context.scene.cl_live_modal_running = False
             return {'CANCELLED'}
 
-        BCL_OT_LiveControllerInputs.sdl2_controller_handler = SDL2_Controller_Handler()
+        CL_OT_LiveControllerInputs.sdl2_controller_handler = SDL2_Controller_Handler()
 
         wm = context.window_manager
         self._timer = wm.event_timer_add(time_step=1/60, window=context.window)
         wm.modal_handler_add(self)
 
         # Set flag
-        context.scene.bcl_live_modal_running = True
+        context.scene.cl_live_modal_running = True
 
-        bpy.ops.bcl.create_nodegroup()
+        bpy.ops.wm.cl_create_nodegroup()
 
         return {'RUNNING_MODAL'}
 
@@ -143,21 +143,21 @@ class BCL_OT_LiveControllerInputs(bpy.types.Operator):
         if self._timer:
             wm.event_timer_remove(self._timer)
 
-        context.scene.bcl_live_modal_running = False
+        context.scene.cl_live_modal_running = False
 
         self.report({'INFO'}, "Stopped live inputs.")
 
-class BCL_OT_RecordControllerInputs(bpy.types.Operator):
+class CL_OT_RecordControllerInputs(bpy.types.Operator):
     """Get Controller Inputs (Record, ie with animation playback and keyframing)"""
-    bl_idname = "bcl.record_controller_inputs"
+    bl_idname = "wm.cl_record_controller_inputs"
     bl_label = "Record Controller Inputs"
 
     _timer = None
 
     def modal(self, context, event):
         if event.type == 'TIMER':
-            BCL_OT_LiveControllerInputs.sdl2_controller_handler.poll()
-        if not context.scene.bcl_record_modal_running or event.type in {'ESC'}:
+            CL_OT_LiveControllerInputs.sdl2_controller_handler.poll()
+        if not context.scene.cl_record_modal_running or event.type in {'ESC'}:
             self.cancel(context)
             return {'CANCELLED'}
         return {'PASS_THROUGH'}
@@ -166,14 +166,14 @@ class BCL_OT_RecordControllerInputs(bpy.types.Operator):
 
         create_reader()
 
-        if context.scene.bcl_live_modal_running:
-            context.scene.bcl_live_modal_running = False
+        if context.scene.cl_live_modal_running:
+            context.scene.cl_live_modal_running = False
     
-        if context.scene.bcl_record_modal_running:
-            context.scene.bcl_record_modal_running = False
+        if context.scene.cl_record_modal_running:
+            context.scene.cl_record_modal_running = False
             return {'CANCELLED'}
         
-        BCL_OT_RecordControllerInputs.sdl2_controller_handler = SDL2_Controller_Handler()
+        CL_OT_RecordControllerInputs.sdl2_controller_handler = SDL2_Controller_Handler()
 
         if keyframe_inputs not in bpy.app.handlers.frame_change_pre:
             bpy.app.handlers.frame_change_pre.append(keyframe_inputs)
@@ -186,9 +186,9 @@ class BCL_OT_RecordControllerInputs(bpy.types.Operator):
         bpy.ops.screen.animation_play()
 
         # Set flag
-        context.scene.bcl_record_modal_running = True
+        context.scene.cl_record_modal_running = True
 
-        bpy.ops.bcl.create_nodegroup()
+        bpy.ops.wm.cl_create_nodegroup()
 
         return {'RUNNING_MODAL'}
 
@@ -205,19 +205,19 @@ class BCL_OT_RecordControllerInputs(bpy.types.Operator):
         if keyframe_inputs in bpy.app.handlers.frame_change_pre:
             bpy.app.handlers.frame_change_pre.remove(keyframe_inputs)
 
-        context.scene.bcl_record_modal_running = False
+        context.scene.cl_record_modal_running = False
 
         self.report({'INFO'}, "Stopped recording inputs.")
 
 
-class BCL_OT_CreateNodegroup(bpy.types.Operator):
+class CL_OT_CreateNodegroup(bpy.types.Operator):
     """Create a Node Group for Controller Inputs"""
-    bl_idname = "bcl.create_nodegroup"
+    bl_idname = "wm.cl_create_nodegroup"
     bl_label = "Create Controller Nodegroup"
 
     def execute(self, context):
         reader = get_reader()
-        group_name = "BCL_ControllerInputs"
+        group_name = "CL_ControllerInputs"
         nodegroup = bpy.data.node_groups.get(group_name)
 
         # Collect desired outputs

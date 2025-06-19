@@ -16,18 +16,18 @@ from . import main
 from . import ui
 
 classes = (
-    main.BCL_OT_LiveControllerInputs,
-    main.BCL_OT_RecordControllerInputs,
-    main.BCL_OT_CreateNodegroup,
-    ui.BCL_PT_Main,
+    main.CL_OT_LiveControllerInputs,
+    main.CL_OT_RecordControllerInputs,
+    main.CL_OT_CreateNodegroup,
+    ui.CL_PT_Main,
 )
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    bpy.types.Scene.bcl_record_modal_running = bpy.props.BoolProperty(default=False)
-    bpy.types.Scene.bcl_live_modal_running = bpy.props.BoolProperty(default=False)
+    bpy.types.Scene.cl_record_modal_running = bpy.props.BoolProperty(default=False)
+    bpy.types.Scene.cl_live_modal_running = bpy.props.BoolProperty(default=False)
 
 def unregister():
     for cls in reversed(classes):
